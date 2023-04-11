@@ -3,13 +3,12 @@
 %global debug_package %{nil}
 
 Name:           dae
-Version:        0.1.0
+Version:        0.1.6
 Release:        1%{?dist}
 Summary:        A Linux lightweight and high-performance transparent proxy solution based on eBPF.
 License:        AGPL
 URL:            https://github.com/daeuniverse/dae
-Source0:        https://github.com/daeuniverse/dae/archive/refs/tags/v%{version}.tar.gz
-Source1:        https://github.com/daeuniverse/dae_bpf_headers/archive/%{_header_commit}.tar.gz
+Source0:        %{url}/releases/download/v%{version}/dae-full-src.zip
 BuildRequires:  clang-devel
 BuildRequires:  golang
 BuildRequires:  llvm-devel
@@ -40,15 +39,15 @@ This package provides v2ray geosite compat for dae.
 
 %prep
 %define     BUILD_DIR   %{_builddir}/%{name}-%{version}/
-%autosetup -n %{name}-%{version}
-rm -rf %{name}-%{version}/control/kern/headers
-tar -xzvf %{S:1} -C %{BUILD_DIR}control/kern/headers --strip-components 1
+unzip %{S:0} -d %{BUILD_DIR}
+%setup -T -D -n %{name}-%{version}
 
 %build
 export GOFLAGS="-buildmode=pie -trimpath -modcacherw"
 export CFLAGS=""
 
-make -C %{_builddir}/%{name}-%{version} VERSION=%{version}
+cd %{BUILD_DIR}
+make VERSION=%{version}
 
 %install
 # package dae
@@ -80,6 +79,9 @@ ln -s %{_datadir}/v2ray/geosite.dat %{buildroot}%{_datadir}/dae/geosite.dat
 %{_datadir}/dae/geosite.dat
 
 %changelog
+* Tue Apr 11 2023 zhullyb <zhullyb@outlook.com> - 0.1.6-1
+- new version
+
 * Fri Mar 17 2023 zhullyb <zhullyb@outlook.com> - 0.1.0-1
 - First Version
 
