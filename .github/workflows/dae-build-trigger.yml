@@ -1,0 +1,14 @@
+name: dae CORP Build Trigger
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - dae
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger dae build
+        run: |
+          curl -X POST ${{ secrets.COPR_HOOK_URL }}dae/
