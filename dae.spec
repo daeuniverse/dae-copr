@@ -1,9 +1,7 @@
-%define _header_commit 378c3c576e0f4c785a3d5e71400b552725527f30
-
 %global debug_package %{nil}
 
 Name:           dae
-Version:        0.1.6
+Version:        0.5.1
 Release:        1%{?dist}
 Summary:        A Linux lightweight and high-performance transparent proxy solution based on eBPF.
 License:        AGPL
@@ -15,27 +13,11 @@ BuildRequires:  llvm-devel
 BuildRequires:  git
 BuildRequires:  systemd
 Requires:       glibc
-Requires:       dae-geoip
-Requires:       dae-geosite
+Requires:       v2ray-geoip
+Requires:       v2ray-domain-list-community
 
 %description
 %{summary}
-
-%package        geoip-v2raycompat
-Summary:        v2ray geoip compat for dae
-Provides:       %{name}-geoip = %{version}-%{release}
-Requires:       v2ray-geoip
-
-%description    geoip-v2raycompat
-This package provides v2ray geoip compat for dae.
-
-%package        geosite-v2raycompat
-Summary:        v2ray geosite compat for dae
-Provides:       %{name}-geosite = %{version}-%{release}
-Requires:       v2ray-domain-list-community
-
-%description    geosite-v2raycompat
-This package provides v2ray geosite compat for dae.
 
 %prep
 %define     BUILD_DIR   %{_builddir}/%{name}-%{version}/
@@ -44,7 +26,7 @@ unzip %{S:0} -d %{BUILD_DIR}
 
 %build
 export GOFLAGS="-buildmode=pie -trimpath -modcacherw"
-export CFLAGS=""
+export CFLAGS="-fno-stack-protector"
 
 cd %{BUILD_DIR}
 make VERSION=%{version}
@@ -56,13 +38,9 @@ install -Dm644 %{BUILD_DIR}install/dae.service %{buildroot}%{_unitdir}/dae.servi
 install -Dm640 %{BUILD_DIR}install/empty.dae %{buildroot}%{_sysconfdir}/dae/config.dae
 install -Dm644 %{BUILD_DIR}example.dae %{buildroot}%{_sysconfdir}/dae/config.dae.example
 
-# package dae-geoip-v2raycompat
-mkdir -p %{buildroot}%{_datadir}/dae/
-ln -s %{_datadir}/v2ray/geoip.dat %{buildroot}%{_datadir}/dae/geoip.dat
-
-# package dae-geosite-v2raycompat
-mkdir -p %{buildroot}%{_datadir}/dae/
-ln -s %{_datadir}/v2ray/geosite.dat %{buildroot}%{_datadir}/dae/geosite.dat
+install -d %{buildroot}%{_datadir}/dae/
+ln -vs %{_datadir}/v2ray/geoip.dat %{buildroot}%{_datadir}/dae/geoip.dat
+ln -vs %{_datadir}/v2ray/geosite.dat %{buildroot}%{_datadir}/dae/geosite.dat
 
 %files
 %license LICENSE
@@ -71,14 +49,14 @@ ln -s %{_datadir}/v2ray/geosite.dat %{buildroot}%{_datadir}/dae/geosite.dat
 %{_unitdir}/dae.service
 %{_sysconfdir}/dae/config.dae.example
 %config %{_sysconfdir}/dae/config.dae
-
-%files geoip-v2raycompat
 %{_datadir}/dae/geoip.dat
-
-%files geosite-v2raycompat
 %{_datadir}/dae/geosite.dat
 
 %changelog
+* Tue Apr 30 2024 zhullyb <zhullyb@outlook.com> - 0.5.1-1
+- new version
+- drop split package, depend on v2ray-geoip and v2ray-domain-list-community
+
 * Tue Apr 11 2023 zhullyb <zhullyb@outlook.com> - 0.1.6-1
 - new version
 
