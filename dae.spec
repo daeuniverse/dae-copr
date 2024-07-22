@@ -2,13 +2,12 @@
 
 Name:           dae
 Version:        0.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A Linux lightweight and high-performance transparent proxy solution based on eBPF.
 License:        AGPL
 URL:            https://github.com/daeuniverse/dae
 Source0:        %{url}/releases/download/v%{version}/dae-full-src.zip
 BuildRequires:  clang-devel
-BuildRequires:  golang
 BuildRequires:  llvm-devel
 BuildRequires:  git
 BuildRequires:  systemd
@@ -24,7 +23,23 @@ Requires:       v2ray-domain-list-community
 unzip %{S:0} -d %{BUILD_DIR}
 %setup -T -D -n %{name}-%{version}
 
+ARCH=$(uname -m)
+if [ "$ARCH" == "x86_64" ]; then
+    ARCH="amd64"
+elif [ "$ARCH" == "aarch64" ]; then
+    ARCH="arm64"
+fi
+LATEST_GO_VERSION="$(curl --silent https://go.dev/VERSION?m=text | head -n 1)";
+LATEST_GO_DOWNLOAD_URL="https://go.dev/dl/${LATEST_GO_VERSION}.linux-${ARCH}.tar.gz"
+cd $HOME
+curl -OJ -L --progress-bar $LATEST_GO_DOWNLOAD_URL
+tar -xf ${LATEST_GO_VERSION}.linux-${ARCH}.tar.gz
+
 %build
+export GOROOT="$HOME/go"
+export GOPATH="$HOME/go/packages"
+export PATH="$GOROOT/bin:$GOPATH/bin:$PATH"
+
 export GOFLAGS="-buildmode=pie -trimpath -modcacherw"
 export CFLAGS="-fno-stack-protector"
 
@@ -53,6 +68,9 @@ ln -vs %{_datadir}/v2ray/geosite.dat %{buildroot}%{_datadir}/dae/geosite.dat
 %{_datadir}/dae/geosite.dat
 
 %changelog
+* Mon Jul 22 2024 zhullyb <zhullyb@outlook.com> - 0.7.0-2
+- install golang manually
+
 * Mon Jul 22 2024 zhullyb <zhullyb@outlook.com> - 0.7.0-1
 - new version
 
