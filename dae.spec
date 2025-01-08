@@ -4,13 +4,12 @@ Name:           dae
 Version:        0.9.0
 Release:        1%{?dist}
 Summary:        A Linux lightweight and high-performance transparent proxy solution based on eBPF.
-License:        AGPL
+License:        AGPL-3.0-or-later
 URL:            https://github.com/daeuniverse/dae
 Source0:        %{url}/releases/download/v%{version}/dae-full-src.zip
 BuildRequires:  clang-devel
 BuildRequires:  llvm-devel
-BuildRequires:  git
-BuildRequires:  systemd
+BuildRequires:  systemd-rpm-macros
 Requires:       glibc
 Requires:       v2ray-geoip
 Requires:       v2ray-domain-list-community
