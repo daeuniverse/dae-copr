@@ -1,0 +1,47 @@
+name: Upgpkg Daed SPEC Version
+on: 
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 */1 * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          ref: daed
+
+      - name: Get Current Version
+        run: |
+          CURRENT_VERSION=`grep -E '^Version:' *.spec | awk '{print $2}'`
+          echo "CURRENT_VERSION=$CURRENT_VERSION" >> $GITHUB_ENV
+
+      - name: Export latest daed version
+        run: |
+          NEW_VERSION=`curl -s https://api.github.com/repos/daeuniverse/daed/releases/latest | jq -r '.tag_name' | sed 's/v//g'`
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+      - name: Run rpmdev-bumpspec action
+        if: ${{ env.CURRENT_VERSION != env.NEW_VERSION }}
+        uses: netoarmando/rpmdev-bumpspec-action@v1
+        with: 
+          specfile: 'daed.spec'
+          new: ${{ env.NEW_VERSION }}
+          userstring: "zhullyb <zhullyb@outlook.com>"
+
+      - name: Commit changes
+        if: ${{ env.CURRENT_VERSION != env.NEW_VERSION }}
+        run: |
+          git config --local user.email "zhullyb@outlook.com"
+          git config --local user.name "zhullyb"
+          git add .
+          git commit -m "upgpkg: daed@${{ env.NEW_VERSION }}"
+          git push
+
+      - name: trigger copr webhook
+        if: ${{ env.CURRENT_VERSION != env.NEW_VERSION }}
+        run: |
+          curl -X POST ${{ secrets.COPR_HOOK_URL }}daed/

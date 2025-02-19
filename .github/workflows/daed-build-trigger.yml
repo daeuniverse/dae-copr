@@ -1,0 +1,14 @@
+name: daed CORP Build Trigger
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - daed
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger daed build
+        run: |
+          curl -X POST ${{ secrets.COPR_HOOK_URL }}daed/
