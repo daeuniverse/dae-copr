@@ -1,8 +1,8 @@
 %global debug_package %{nil}
 
 Name:           daed
-Version:        dae
-Release:        node-parser-1.17.0
+Version:        1.19.0
+Release:        1%{?dist}
 Summary:        daed, a modern dashboard with dae.
 
 License:        AGPL-3.0-or-later
@@ -78,6 +78,9 @@ ln -vs %{_datadir}/v2ray/geosite.dat %{buildroot}%{_datadir}/daed/geosite.dat
 
 
 %changelog
+* Sat Dec 06 2025 zhullyb <zhullyb@outlook.com> - 1.19.0-1
+- new version
+
 * Fri Dec 05 2025 zhullyb <zhullyb@outlook.com>
 - new version
 
