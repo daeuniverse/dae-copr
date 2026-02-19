@@ -57,6 +57,9 @@ export CGO_CFLAGS="${CFLAGS}"
 export CGO_CXXFLAGS="${CXXFLAGS}"
 export CGO_LDFLAGS="${LDFLAGS}"
 export GOFLAGS="-buildmode=pie -trimpath -ldflags=-linkmode=external -mod=readonly -modcacherw"
+
+export NODE_OPTIONS="--max-old-space-size=8192"
+
 make VERSION="%{version}"
 
 %install
