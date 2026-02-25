@@ -21,7 +21,18 @@ jobs:
 
       - name: Export latest dae version
         run: |
-          NEW_VERSION=`curl -s https://api.github.com/repos/daeuniverse/dae/releases/latest | jq -r '.tag_name' | sed 's/v//g'`
+          NEW_VERSION=""
+          for attempt in $(seq 1 5); do
+            NEW_VERSION=$(curl -fsS https://api.github.com/repos/daeuniverse/dae/releases/latest | jq -r '.tag_name' | sed 's/v//g' || true)
+            if [ -n "$NEW_VERSION" ] && [ "$NEW_VERSION" != "null" ]; then
+              break
+            fi
+
+            if [ "$attempt" -lt 5 ]; then
+              echo "Attempt $attempt failed, retrying in 10 seconds..."
+              sleep 10
+            fi
+          done
           if [ -z "$NEW_VERSION" ] || [ "$NEW_VERSION" = "null" ] ; then
             echo "NEW_VERSION is empty, stopping the workflow"
             exit 1

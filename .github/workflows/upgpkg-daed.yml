@@ -21,17 +21,28 @@ jobs:
 
       - name: Export latest daed version
         run: |
-          NEW_VERSION=`curl -s https://api.github.com/repos/daeuniverse/daed/releases | jq -r '
-            map(
-              select(
-                .published_at != null and
-                (.tag_name | test("^v[0-9]+([.][0-9]+)*([-.][0-9A-Za-z.]+)?$"))
+          NEW_VERSION=""
+          for attempt in $(seq 1 5); do
+            NEW_VERSION=$(curl -fsS https://api.github.com/repos/daeuniverse/daed/releases | jq -r '
+              map(
+                select(
+                  .published_at != null and
+                  (.tag_name | test("^v[0-9]+([.][0-9]+)*([-.][0-9A-Za-z.]+)?$"))
+                )
               )
-            )
-            | sort_by(.published_at)
-            | last
-            | .tag_name // empty
-          ' | sed 's/^v//'`
+              | sort_by(.published_at)
+              | last
+              | .tag_name // empty
+            ' | sed 's/^v//' || true)
+            if [ -n "$NEW_VERSION" ] && [ "$NEW_VERSION" != "null" ]; then
+              break
+            fi
+
+            if [ "$attempt" -lt 5 ]; then
+              echo "Attempt $attempt failed, retrying in 10 seconds..."
+              sleep 10
+            fi
+          done
           if [ -z "$NEW_VERSION" ] || [ "$NEW_VERSION" = "null" ] ; then
             echo "NEW_VERSION is empty, stopping the workflow"
             exit 1
