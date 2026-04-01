@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
 Name:           daed
-Version:        1.25.0
+Version:        1.26.0
 Release:        1%{?dist}
 Summary:        daed, a modern dashboard with dae.
 
@@ -81,6 +81,9 @@ ln -vs %{_datadir}/v2ray/geosite.dat %{buildroot}%{_datadir}/daed/geosite.dat
 
 
 %changelog
+* Wed Apr 01 2026 zhullyb <zhullyb@outlook.com> - 1.26.0-1
+- new version
+
 * Tue Mar 31 2026 zhullyb <zhullyb@outlook.com> - 1.25.0-1
 - new version
 
