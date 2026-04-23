@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
 Name:           dae
-Version:        1.0.0
+Version:        1.1.0
 Release:        1%{?dist}
 Summary:        A Linux lightweight and high-performance transparent proxy solution based on eBPF.
 License:        AGPL-3.0-or-later
@@ -67,6 +67,9 @@ ln -vs %{_datadir}/v2ray/geosite.dat %{buildroot}%{_datadir}/dae/geosite.dat
 %{_datadir}/dae/geosite.dat
 
 %changelog
+* Thu Apr 23 2026 zhullyb <zhullyb@outlook.com> - 1.1.0-1
+- new version
+
 * Fri May 30 2025 zhullyb <zhullyb@outlook.com> - 1.0.0-1
 - new version
 
